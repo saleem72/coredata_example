@@ -1,0 +1,52 @@
+{
+    "id": 54,
+    "name": "Al Liba Offers and Gifts",
+    "is_active": 1,
+    "sort": 0,
+    "parent_id": 53,
+    "restaurant_id": 1,
+    "products": [
+        {
+            "id": 5,
+            "name": "POTATO-1KG",
+            "description": "POTATO-1KG",
+            "image": "https://api-alliba.codersdc.net/alliba-api/storage/product/images/DOnaEBsbmHp46nCbCedrZoTCnmhMTyisLF2WUaXQ.jpg",
+            "slider_image": null,
+            "size": "6Per Box",
+            "expected_time": null,
+            "price": 32,
+            "discount": null,
+            "sort": 1,
+            "is_available": 1,
+            "category_id": 54,
+            "category_name": "Al Liba Offers and Gifts",
+            "parent_category_name": "OFFERS",
+            "restaurant_id": 1,
+            "code": "DOGA001",
+            "barcode": "8695572000606",
+            "offer": null,
+            "offer_id": null
+        },
+        {
+            "id": 666,
+            "name": "بانثيون | قيمر",
+            "description": "بانثيون أيس كريم",
+            "image": null,
+            "slider_image": null,
+            "size": "5.5LT",
+            "expected_time": null,
+            "price": 0,
+            "discount": null,
+            "sort": 1,
+            "is_available": 1,
+            "category_id": 54,
+            "category_name": "Al Liba Offers and Gifts",
+            "parent_category_name": "OFFERS",
+            "restaurant_id": 1,
+            "code": "",
+            "barcode": "",
+            "offer": null,
+            "offer_id": null
+        }
+    ]
+}

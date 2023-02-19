@@ -1,0 +1,21 @@
+{
+    "id": 652,
+    "name": "PUDING STRAWBERRY 100 GR",
+    "description": "بودينغ مرسين بالفراولة",
+    "image": "https://api-alliba.codersdc.net/alliba-api/storage/product/images/q79SYVUZxkdoe1HNJMPGlxrrFeV89MCnlH6CP3RB.jpg",
+    "slider_image": null,
+    "size": "24 Per Box",
+    "expected_time": null,
+    "price": 7,
+    "discount": null,
+    "sort": 23,
+    "is_available": 1,
+    "category_id": 11,
+    "category_name": "Dairy",
+    "parent_category_name": "MERSIN",
+    "restaurant_id": 1,
+    "code": "SUTAS010",
+    "barcode": "8683581659885",
+    "offer": null,
+    "offer_id": null
+}
