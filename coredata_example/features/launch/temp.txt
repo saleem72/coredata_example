@@ -1,21 +1,19 @@
-        VStack(spacing: 8) {
-            if langStr != "ar" {
-                Capsule()
-                    .frame(width: labelWidth, height: 5)
+            HStack {
+                Button(action: onIncrement, label: {
+                    Image(systemName: "plus.circle.fill")
+                        .resizable()
+                        .foregroundColor(Color.green)
+                        .frame(width: 24, height: 24, alignment: .center)
+                })
+                .frame(width: 44, height: 44, alignment: .center)
+                
+                AnimatedSlide(amount: product.cartCount)
+                
+                Button(action: onDecrement, label: {
+                    Image(systemName: "minus.circle.fill")
+                        .resizable()
+                        .foregroundColor(Color.green)
+                        .frame(width: 24, height: 24, alignment: .center)
+                })
+                .frame(width: 44, height: 44, alignment: .center)
             }
-            
-            
-            Text(text)
-                .font(Font(textFont as CTFont))
-                .fixedSize()
-                .onAppear {
-                    calcDimintions()
-                }
-            
-            if langStr == "ar" {
-                Capsule()
-                    .frame(width: labelWidth, height: 5)
-            }
-        }
-        .frame(width: labelHeight + 13, height: labelWidth)
-        .rotationEffect(Angle(degrees: textDirection == .up ? -90 : 90))

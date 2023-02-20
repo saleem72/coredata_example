@@ -12,12 +12,14 @@ protocol MenuRepository {
     var products: PassthroughSubject<[Product], Never> {get}
     var subCategories: PassthroughSubject<[SubCategory], Never> {get}
     var categories: PassthroughSubject<[Category], Never> {get}
-    
+    var cartItems: PassthroughSubject<[Product], Never> {get}
     
     var activeCategory: CurrentValueSubject<Int?, Never> {get}
     var activeSubCategory: CurrentValueSubject<Int?, Never> {get}
     
-    func getMenu(handler: @escaping (Result<RestaurantMenu, Error>) -> ())
+    func getMenu()
     func setActiveCategory(categoryId: Int)
     func setActiveSubCategory(subCategoryId: Int?)
+    func incrementProductAmount(product: Product)
+    func decrementProductAmount(product: Product)
 }

@@ -14,6 +14,7 @@ class MenuScreenViewModel: ObservableObject {
     @Published var categories: [Category] = []
     @Published var subCategories: [SubCategory] = []
     @Published var products: [Product] = []
+    @Published var cartItems: [Product] = []
     @Published var activeCategory: Int? = nil
     @Published var activeSubCategory: Int? = nil
     @Published var error: String? = nil
@@ -43,6 +44,7 @@ class MenuScreenViewModel: ObservableObject {
         repository.categories
             .sink { [weak self] remoteCategories in
                 self?.categories = remoteCategories
+                self?.isLoading = false
             }
             .store(in: &cancellables)
         
@@ -57,20 +59,17 @@ class MenuScreenViewModel: ObservableObject {
                 self?.activeSubCategory = remoteActiveSubCategory
             }
             .store(in: &cancellables)
+        
+        repository.cartItems
+            .sink { [weak self] remoteCart in
+                self?.cartItems = remoteCart
+            }
+            .store(in: &cancellables)
     }
     
     func getMenu() {
         isLoading = true
-        repository.getMenu { [weak self] response in
-            self?.isLoading = false
-            switch (response) {
-            
-            case .success(let menu):
-                self?.menuToState(menu: menu)
-            case .failure(let error):
-                self?.error = error.localizedDescription
-            }
-        }
+        repository.getMenu()
     }
     
     func menuToState(menu: RestaurantMenu)  {
@@ -91,5 +90,13 @@ class MenuScreenViewModel: ObservableObject {
         guard activeSubCategory != subCategoryId else {return}
 //        activeSubCategory = subCategoryId
         repository.setActiveSubCategory(subCategoryId: subCategoryId)
+    }
+    
+    func incrementProduct(product: Product) {
+        repository.incrementProductAmount(product: product)
+    }
+    
+    func decrementProduct(product: Product) {
+        repository.decrementProductAmount(product: product)
     }
 }

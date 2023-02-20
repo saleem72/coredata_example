@@ -42,8 +42,15 @@ struct MenuScreen: View {
                 
                 LoadingView(isLoading: viewModel.isLoading)
             }
-            .navigationTitle("Our Menu")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarHidden(true)
+//            .navigationTitle("Our Menu")
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar(content: {
+//                CartButton(count: viewModel.cartItems.count) {}
+//                    .iconColor(Color.pallet.secondary)
+//                    .badgeBackgroundColor(Color.pallet.error)
+//                    .badgeForegroundColor(Color.pallet.onError)
+//            })
         }
         .navigationViewStyle(StackNavigationViewStyle())
         //        .navigationViewStyle(StackNavigationViewStyle())
@@ -78,8 +85,20 @@ struct MenuScreen: View {
 //
 //            categoriesBar()
             
-            Spacer()
-                .frame(height: 16)
+            HStack {
+                
+                Text("Our Menu")
+                    .font(.title)
+                
+                Spacer(minLength: 0)
+                
+                CartButton(count: viewModel.cartItems.count) {}
+                    .iconColor(Color.pallet.secondary)
+                    .badgeBackgroundColor(Color.pallet.error)
+                    .badgeForegroundColor(Color.pallet.onError)
+            }
+            .frame(height: 56)
+            .padding(.horizontal, 16)
             
             subCategoriesBar()
             
@@ -94,7 +113,7 @@ struct MenuScreen: View {
                 }
                 
                 productsList()
-                    .animation(.none)
+//                    .animation(.none)
             }
             .frame(maxHeight: .infinity)
             
@@ -147,7 +166,12 @@ struct MenuScreen: View {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ForEach(viewModel.products) { product in
-                        ProductListItem(product: product)
+                        ProductListItem(product: product) {
+                            viewModel.incrementProduct(product: product)
+                        } onDecrement: {
+                            viewModel.decrementProduct(product: product)
+                        }
+
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

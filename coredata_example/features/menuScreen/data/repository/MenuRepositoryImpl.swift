@@ -17,6 +17,7 @@ class MenuRepositoryImpl: MenuRepository {
     var products = PassthroughSubject<[Product], Never>()
     var subCategories = PassthroughSubject<[SubCategory], Never>()
     var categories = PassthroughSubject<[Category], Never>()
+    var cartItems = PassthroughSubject<[Product], Never>()
     
     init(service: MenuService) {
         self.service = service
@@ -26,21 +27,19 @@ class MenuRepositoryImpl: MenuRepository {
     private var cancellables = Set<AnyCancellable>()
     private var dbContext = CoreDataManager.shared.context
     
-    func getMenu(handler: @escaping (Result<RestaurantMenu, Error>) -> ()) {
+    func getMenu() {
         let categories = fetchCategories()
         if !categories.isEmpty {
-            let menu = self.readMenuFromDB()
-            handler(.success(menu))
+            self.readMenuFromDB()
             return
         }
         getMenuFromApi { [unowned self] response in
             switch(response) {
             
             case .success(_):
-                let menu = self.readMenuFromDB()
-                handler(.success(menu))
+                self.readMenuFromDB()
             case .failure(let error):
-                handler(.failure(error))
+                print(error.localizedDescription)
             }
         }
     }
@@ -58,7 +57,7 @@ class MenuRepositoryImpl: MenuRepository {
             .store(in: &cancellables)
     }
     
-    private func readMenuFromDB() -> RestaurantMenu {
+    private func readMenuFromDB() {
         let  categories: [Category]  = fetchCategories()
         var  subCategories: [SubCategory]
         var  products: [Product]
@@ -67,14 +66,12 @@ class MenuRepositoryImpl: MenuRepository {
         }
         subCategories = fetchSubCategories(for: activeCategory.value!)
         products = fetchCategoryProducts(for: activeCategory.value!)
-        let menu = RestaurantMenu(
-            categories: categories,
-            subCategories: subCategories,
-            products: products,
-            activeCategory: activeCategory.value,
-            activeSubCategory: activeSubCategory.value
-        )
-        return menu
+        self.categories.send(categories)
+        self.subCategories.send(subCategories)
+        self.products.send(products)
+        self.activeCategory.send(activeCategory.value)
+        self.activeSubCategory.send(activeSubCategory.value)
+        self.cartItems.send(fetchCartProducts())
     }
     
     private func extractMenu(remoteCategories: [CategoryDTO]) {
@@ -208,6 +205,20 @@ class MenuRepositoryImpl: MenuRepository {
         }
     }
     
+    private func fetchCartProducts() -> [Product] {
+        let productsFetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
+        productsFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ProductEntity.sort, ascending: true)]
+        productsFetchRequest.predicate = NSPredicate(format: "cartCount > 0")
+        do {
+             let dbProducts = try dbContext.fetch(productsFetchRequest)
+            let products = dbProducts.map({Product(entity: $0)})
+            return products
+        } catch let error {
+            print(error.localizedDescription)
+            return []
+        }
+    }
+    
     private func fetchSubCategoryProducts(for subCategoryId: Int) -> [Product] {
         let productsFetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
         productsFetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ProductEntity.sort, ascending: true)]
@@ -270,6 +281,31 @@ class MenuRepositoryImpl: MenuRepository {
             products = fetchSubCategoryProducts(for: subCategoryId!)
         }
         self.products.send(products)
+    }
+    
+    private func updateProducts() {
+        cartItems.send(fetchCartProducts())
+        if activeSubCategory.value == nil {
+            let dbProducts = fetchCategoryProducts(for: activeCategory.value ?? 0)
+            products.send(dbProducts)
+        } else {
+            let dbProducts = fetchSubCategoryProducts(for: activeSubCategory.value ?? 0)
+            products.send(dbProducts)
+        }
+    }
+    
+    
+    func incrementProductAmount(product: Product) {
+        product.entity.cartCount = product.entity.cartCount + 1
+        save()
+        updateProducts()
+    }
+    
+    func decrementProductAmount(product: Product) {
+        guard product.entity.cartCount > 0 else { return }
+        product.entity.cartCount = product.entity.cartCount - 1
+        save()
+        updateProducts()
     }
 }
 
